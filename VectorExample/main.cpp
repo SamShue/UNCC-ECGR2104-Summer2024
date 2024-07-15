@@ -5,50 +5,48 @@ using namespace std;
 class vector {
     public:
     vector(){
-        a = nullptr;
-        allocatedSize = 0;
-        nextIndex = 0;
+        sizeAllocated = 3;
+        sizeFilled = 0;
+        a = new int[sizeAllocated];
     }
     
     void push_back(int data){
         
-        if(nextIndex == allocatedSize){
-            int* new_a = new int[allocatedSize + 1];
-            
-            // Copy over old data
-            for(int i = 0; i < allocatedSize; i++){
-                new_a[i] = a[i];
+        if(sizeFilled == sizeAllocated){
+            cout << "Allocating more space!" << endl;
+            int* temp = new int[sizeAllocated*2];
+            for(int i = 0; i < sizeAllocated; i++){
+                temp[i] = a[i];
             }
-            
-            // clean up old data
             delete[] a;
-            
-            // copy over new array address to pointer
-            a = new_a;
-            
-            // increase total allocated size
-            allocatedSize++;
+            a = temp;
+            sizeAllocated = sizeAllocated*2;
         }
         
-        a[nextIndex++] = data;
+        a[sizeFilled] = data;
+        sizeFilled++;
     }
     
     void pop_back(){
-        nextIndex--;
-    }
-    
-    int& at(int index) const {
-        return a[index];
+        sizeFilled--;
+        
+        if(sizeFilled < 0){
+            sizeFilled = 0;
+        }
     }
     
     int size() const {
-        return nextIndex;
+        return sizeFilled;
+    }
+    
+    int& at(int i) const {
+        return a[i];
     }
     
     private:
     int* a;
-    int allocatedSize;
-    int nextIndex;
+    int sizeAllocated;
+    int sizeFilled;
 };
 
 int main(){
@@ -57,8 +55,11 @@ int main(){
     v.push_back(5);
     v.push_back(7);
     v.push_back(9);
+    v.push_back(3);
     
     v.pop_back();
+    
+    v.at(0) = 1;
     
     for(int i = 0; i < v.size(); i++){
         cout << v.at(i) << endl;
